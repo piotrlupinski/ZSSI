@@ -11,46 +11,35 @@ test_data <- data[-indices, ]
 
 un_alcohol = seq(11, 15, .01)
 
-alcohol_low = fuzzy_cone_gset(center=12, radius=1, universe=un_alcohol)
+alcohol_low = fuzzy_cone_gset(center=11, radius=2, universe=un_alcohol)
 alcohol_medium = fuzzy_cone_gset(center=13, radius=1, universe=un_alcohol)
-alcohol_high = fuzzy_cone_gset(center=14, radius=1, universe=un_alcohol)
+alcohol_high = fuzzy_cone_gset(center=15, radius=2, universe=un_alcohol)
 
 un_malic_acid = seq(0.5, 6, .01)
 
-malic_acid_low = fuzzy_cone_gset(center=1, radius=2, universe=un_malic_acid)
-malic_acid_medium = fuzzy_cone_gset(center=3, radius=2, universe=un_malic_acid)
-malic_acid_high = fuzzy_cone_gset(center=5, radius=2, universe=un_malic_acid)
+malic_acid_low = fuzzy_cone_gset(center=0.5, radius=2, universe=un_malic_acid)
+malic_acid_medium = fuzzy_cone_gset(center=3, radius=4, universe=un_malic_acid)
+malic_acid_high = fuzzy_cone_gset(center=6, radius=2, universe=un_malic_acid)
 
 un_color_intensity = seq(1, 12, .01)
 
-color_intensity_low = fuzzy_cone_gset(center=2, radius=3, universe=un_color_intensity)
-color_intensity_medium = fuzzy_cone_gset(center=5, radius=3, universe=un_color_intensity)
-color_intensity_high = fuzzy_cone_gset(center=8, radius=3, universe=un_color_intensity)
-
-un_cultivar = seq(1, 3, 1)
-
-cultivar_one = fuzzy_cone_gset(center=1, radius=1, universe=un_cultivar)
-cultivar_two = fuzzy_cone_gset(center=2, radius=1, universe=un_cultivar)
-cultivar_three = fuzzy_cone_gset(center=3, radius=1, universe=un_cultivar)
+color_intensity_low = fuzzy_cone_gset(center=1, radius=4, universe=un_color_intensity)
+color_intensity_medium = fuzzy_cone_gset(center=6, radius=3, universe=un_color_intensity)
+color_intensity_high = fuzzy_cone_gset(center=12, radius=6, universe=un_color_intensity)
 
 alcohol = fuzzy_variable(alcohol_low = alcohol_low, alcohol_medium = alcohol_medium, alcohol_high = alcohol_high)
 malic_acid = fuzzy_variable(malic_acid_low = malic_acid_low, malic_acid_medium = malic_acid_medium, malic_acid_high = malic_acid_high)
 color_intensity = fuzzy_variable(color_intensity_low = color_intensity_low, color_intensity_medium = color_intensity_medium, color_intensity_high = color_intensity_high)
-cultivar = fuzzy_variable(cultivar_one = cultivar_one, cultivar_two = cultivar_two, cultivar_three = cultivar_three)
 
 plot(alcohol)
 plot(malic_acid)
 plot(color_intensity)
-plot(cultivar)
 
 fuzzy_variables <- set(
   alcohol = alcohol,
   malic_acid = malic_acid,
   color_intensity = color_intensity,
-  cultivar = cultivar
 )
-
-3 %in% malic_acid_high
 
 get_symbolic_name <- function(value, attribute) {
   if(attribute == 'alcohol') {
@@ -59,7 +48,6 @@ get_symbolic_name <- function(value, attribute) {
     high = attributes(alcohol$alcohol_high[value])$memberships
     
     membership = max(low, medium, high)
-    
 
     if(identical(membership,low))
     {
@@ -72,6 +60,10 @@ get_symbolic_name <- function(value, attribute) {
     else if (identical(membership,high))
     {
       return("alcohol_high")
+    } 
+    else 
+    {
+      return("alcohol_medium")
     }
   } 
   else if (attribute == 'malic_acid') {
@@ -87,6 +79,9 @@ get_symbolic_name <- function(value, attribute) {
       return("malic_acid_medium")
     } else if (identical(membership, high)) {
       return("malic_acid_high")
+    } else 
+    {
+      return("malic_acid_medium")
     }
   } 
   else if (attribute == 'color_intensity') {
@@ -102,25 +97,45 @@ get_symbolic_name <- function(value, attribute) {
       return("color_intensity_medium")
     } else if (identical(membership, high)) {
       return("color_intensity_high")
+    } else 
+    {
+      return("color_intensity_medium")
     }
-  }
-  else if (attribute == 'cultivar') {
-    one = attributes(cultivar$cultivar_one[value])$memberships
-    two = attributes(cultivar$cultivar_two[value])$memberships
-    three = attributes(cultivar$cultivar_three[value])$memberships
     
-    membership = max(one, two, three)
-    
-    if(identical(membership, one)) {
-      return("cultivar_one")
-    } else if (identical(membership, two)) {
-      return("cultivar_two")
-    } else if (identical(membership, three)) {
-      return("cultivar_three")
-    }
   }
 }
 
-for (attr in c("alcohol", "malic_acid", "color_intensity", "cultivar")) {
+for (attr in c("alcohol", "malic_acid", "color_intensity")) {
   train_data[[attr]] <- sapply(train_data[[attr]], get_symbolic_name, attr = attr)
 }
+
+alcohol$alcohol_medium[13.03]
+
+print(alcohol_medium)
+alcohol_medium[13.03]
+13.03 %in% alcohol_medium
+
+gset_core(alcohol_low)
+gset_core(alcohol_medium)
+gset_core(alcohol_high)
+
+gset_core(malic_acid_low)
+gset_core(malic_acid_medium)
+gset_core(malic_acid_high)
+
+gset_core(color_intensity_low)
+gset_core(color_intensity_medium)
+gset_core(color_intensity_high)
+
+cut(alcohol_low, 0.75)
+cut(alcohol_medium, 0.75)
+cut(alcohol_high, 0.75)
+
+cut(malic_acid_low, 0.75)
+cut(malic_acid_medium, 0.75)
+cut(malic_acid_high, 0.75)
+
+cut(color_intensity_low, 0.75)
+cut(color_intensity_medium, 0.75)
+cut(color_intensity_high, 0.75)
+
